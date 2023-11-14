@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367897514235",
+    "project_id": "remindify-35274",
+    "storage_bucket": "remindify-35274.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367897514235:android:aa8f0645691762a23c605e",
+        "android_client_info": {
+          "package_name": "com.example.remindify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYUngJQaytA3oIGZQeyroeqdwmVAfprrg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
