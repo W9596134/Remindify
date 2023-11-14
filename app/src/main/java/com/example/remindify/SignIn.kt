@@ -17,6 +17,7 @@ class SignIn : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.pass)
         val signin = findViewById<Button>(R.id.signin)
         val signup = findViewById<TextView>(R.id.signup)
+        
         signin.setOnClickListener {
             val emailText = email.text.toString()
             val passwordText = password.text.toString()
