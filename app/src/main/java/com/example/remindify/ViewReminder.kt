@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import com.makeramen.roundedimageview.RoundedImageView
 import com.squareup.picasso.Picasso
 
 class ViewReminder : AppCompatActivity() {
@@ -11,11 +12,12 @@ class ViewReminder : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_reminder)
 
+        var back=findViewById<ImageView>(R.id.back)
         var title=findViewById<TextView>(R.id.title)
         var des=findViewById<TextView>(R.id.des)
         var date=findViewById<TextView>(R.id.date)
         var time=findViewById<TextView>(R.id.time)
-        var image=findViewById<ImageView>(R.id.image)
+        var image=findViewById<RoundedImageView>(R.id.image)
 
         title.text=intent.getStringExtra("title")
         des.text=intent.getStringExtra("des")
@@ -24,6 +26,11 @@ class ViewReminder : AppCompatActivity() {
         if(intent.getStringExtra("image")!="")
             Picasso.get().load(intent.getStringExtra("image")).into(image)
 
+        back.setOnClickListener {
+            onBackPressed()
+        }
 
     }
+
+
 }

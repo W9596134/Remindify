@@ -11,6 +11,13 @@
         android:layout_width="match_parent"
         android:background="@color/colorPrimaryDark"
         android:layout_height="?attr/actionBarSize">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/back"
+            android:layout_centerVertical="true"
+            android:layout_margin="15dp"
+            android:id="@+id/back"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,11 +72,17 @@
                     android:layout_marginLeft="10dp"
                     android:id="@+id/des"
                     />
-                <ImageView
+                <com.makeramen.roundedimageview.RoundedImageView
                     android:scaleType="centerCrop"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_margin="20dp"
+                    app:riv_corner_radius="10dp"
+                    app:riv_border_width="5dp"
+                    app:riv_border_color="#333333"
+                    app:riv_mutate_background="true"
+                    app:riv_tile_mode="repeat"
+
                     android:id="@+id/image"
                     />
 

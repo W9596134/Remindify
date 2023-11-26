@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Tdo">
 
     <!-- TODO: Update blank fragment layout -->
@@ -79,14 +80,19 @@
                 android:text="Image: choose...."
                 android:textSize="18dp"/>
 
-            <ImageView
-                android:layout_margin="10dp"
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_margin="20dp"
                 android:visibility="gone"
-                android:layout_gravity="center"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:id="@+id/img"/>
+                app:riv_corner_radius="10dp"
+                app:riv_border_width="5dp"
+                app:riv_border_color="#333333"
+                app:riv_mutate_background="true"
+                app:riv_tile_mode="repeat"
+                android:id="@+id/img"
+                />
             <Button
                 android:layout_marginBottom="30dp"
                 android:id="@+id/save"

@@ -1,7 +1,10 @@
 package com.example.remindify
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -19,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.makeramen.roundedimageview.RoundedImageView
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -37,6 +41,7 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
     var imageurl:String?=null
 
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var title = view.findViewById<TextView>(R.id.title)
@@ -44,7 +49,7 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
         var save = view.findViewById<Button>(R.id.save)
         var image = view.findViewById<TextView>(R.id.image)
         var description = view.findViewById<TextView>(R.id.description)
-        img = view.findViewById<ImageView>(R.id.img)
+        img = view.findViewById<RoundedImageView>(R.id.img)
         getDate(date,requireContext())
         var time = view.findViewById<TextView>(R.id.time)
         getTime(time,requireContext())
@@ -69,7 +74,24 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
                     img?.visibility=View.GONE
                     Toast.makeText(context,"Reminder Added",Toast.LENGTH_SHORT).show()
 
+                }.addOnSuccessListener {
+                    var alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    var intent = Intent(context,AlarmReceiver::class.java)
+                    intent.putExtra("title",titleText)
+                    intent.putExtra("des",descriptionText)
+                    intent.putExtra("date",dateText)
+                    intent.putExtra("time",timeText)
+                    intent.putExtra("image",imageurl)
+                    var pendingIntent = PendingIntent.getBroadcast(context,0,intent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                    var cal = Calendar.getInstance()
+
+                    cal.set(Calendar.HOUR_OF_DAY,timeText.split(":")[0].toInt())
+                    cal.set(Calendar.MINUTE,timeText.split(":")[1].toInt()+1)
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP,cal.timeInMillis,pendingIntent)
+
                 }
+
 //            Toast.makeText(context,"Reminder Added",Toast.LENGTH_SHORT).show()
         }
 
