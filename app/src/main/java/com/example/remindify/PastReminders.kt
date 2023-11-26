@@ -11,6 +11,8 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.childEvents
+import com.google.firebase.database.getValue
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,29 +34,41 @@ class PastReminders : Fragment(R.layout.fragment_past_reminders) {
         var lm=LinearLayoutManager(context);
         rv.layoutManager=lm
 
-        var ref= FirebaseDatabase.getInstance().getReference("reminders")
+        var db=FirebaseDatabase.getInstance()
+        var ref=db.getReference("reminders")
             .child(FirebaseAuth.getInstance().currentUser?.uid?:"")
             .child("Reminders")
-        ref.addChildEventListener( object : ChildEventListener {
+        ref.keepSynced(true)
+        ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                var reminder=snapshot.getValue(Reminder::class.java)
-                if(reminder!=null){
-                    Toast.makeText(context,reminder.title.toString(),Toast.LENGTH_SHORT).show()
+                var reminderw=snapshot.getValue<Reminderw>()
+                val reminder=Reminder(snapshot.key.toString(),reminderw!!)
+                if (reminder != null) {
                     ls.add(reminder)
                     adapter.notifyDataSetChanged()
                 }
+                adapter.notifyDataSetChanged()
             }
+
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                adapter.notifyDataSetChanged()
             }
-            override fun onChildRemoved(snapshot: DataSnapshot){
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                adapter.notifyDataSetChanged()
             }
+
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                adapter.notifyDataSetChanged()
             }
+
             override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
             }
+
         })
 
-        
+
     }
 
 }
