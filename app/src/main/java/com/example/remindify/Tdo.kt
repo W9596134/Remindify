@@ -6,10 +6,15 @@ import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,12 +24,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.makeramen.roundedimageview.RoundedImageView
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,6 +66,7 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
 
 
         save.setOnClickListener {
+
             var titleText = title.text.toString()
             var dateText = date.text.toString()
             var timeText = time.text.toString()
@@ -75,24 +86,31 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
                     Toast.makeText(context,"Reminder Added",Toast.LENGTH_SHORT).show()
 
                 }.addOnSuccessListener {
-                    var alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    var intent = Intent(context,AlarmReceiver::class.java)
-                    intent.putExtra("title",titleText)
-                    intent.putExtra("des",descriptionText)
-                    intent.putExtra("date",dateText)
-                    intent.putExtra("time",timeText)
-                    intent.putExtra("image",imageurl)
-                    var pendingIntent = PendingIntent.getBroadcast(context,0,intent,
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
                     var cal = Calendar.getInstance()
 
-                    cal.set(Calendar.HOUR_OF_DAY,timeText.split(":")[0].toInt())
-                    cal.set(Calendar.MINUTE,timeText.split(":")[1].toInt()+1)
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP,cal.timeInMillis,pendingIntent)
+                    cal.set(Calendar.DAY_OF_MONTH,dateText.split("/")[0].toInt())
+                    cal.set(Calendar.MONTH,dateText.split("/")[1].toInt()-1)
+                    cal.set(Calendar.YEAR,dateText.split("/")[2].toInt())
 
+                    cal.set(Calendar.HOUR_OF_DAY,timeText.split(":")[0].toInt())
+                    cal.set(Calendar.MINUTE,timeText.split(":")[1].toInt())
+
+                    val delay = cal.timeInMillis - System.currentTimeMillis()
+                    Log.e("timessdsd",delay.toString())
+
+                    val inputData = Data.Builder().putString("message", "Alarm triggered at 9:00 PM!").build()
+
+                    val workRequest = OneTimeWorkRequest.Builder(MyWorker::class.java)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(inputData)
+                        .build()
+
+                    WorkManager.getInstance(requireContext()).enqueue(workRequest)
+
+                    Toast.makeText(requireContext(), "Alarm set ", Toast.LENGTH_SHORT).show()
                 }
 
-//            Toast.makeText(context,"Reminder Added",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,"Reminder Added",Toast.LENGTH_SHORT).show()
         }
 
         image.setOnClickListener {
@@ -158,5 +176,4 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
             DatePickerDialog(context, dateSetListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
         }
     }
-
 }

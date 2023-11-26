@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +21,7 @@
         android:theme="@style/Theme.Remindify"
         tools:targetApi="31">
         <activity
-            android:name=".AlarmReceiver"
+            android:name=".ReminderAlarm"
             android:exported="true" />
         <activity
             android:name=".ViewReminder"
