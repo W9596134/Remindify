@@ -55,7 +55,7 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
             var dateText = date.text.toString()
             var timeText = time.text.toString()
             var descriptionText = description.text.toString()
-            var reminder = Reminderw( titleText,descriptionText,dateText,timeText,imageurl?:"")
+            var reminder = Reminderw( titleText,descriptionText,dateText,timeText,imageurl)
             var ref=FirebaseDatabase.getInstance().getReference("reminders")
                 .child(FirebaseAuth.getInstance().currentUser?.uid?:"")
                 .child("Reminders")

@@ -45,9 +45,10 @@ class MyAdapter(ls: ArrayList<Reminder>, context: Context?) : RecyclerView.Adapt
             intent.putExtra("des",ls.get(position).reminder.description)
             intent.putExtra("date",ls.get(position).reminder.date)
             intent.putExtra("time",ls.get(position).reminder.time)
+            intent.putExtra("image",ls.get(position).reminder.image)
             intent.putExtra("id",ls.get(position).id)
             context?.startActivity(intent)
-            
+
 
         }
 
@@ -60,6 +61,10 @@ class MyAdapter(ls: ArrayList<Reminder>, context: Context?) : RecyclerView.Adapt
                 ls.removeAt(position)
                 notifyDataSetChanged()
             }
+            builder.setNegativeButton("Cancel"){dialogInterface, which ->
+                dialogInterface.dismiss()
+            }
+            builder.show()
 
             true
 
