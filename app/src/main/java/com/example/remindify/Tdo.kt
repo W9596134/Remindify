@@ -2,31 +2,28 @@ package com.example.remindify
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.PendingIntent
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.TimePickerDialog
-import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
-import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -98,17 +95,9 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
                     val delay = cal.timeInMillis - System.currentTimeMillis()
                     Log.e("timessdsd",delay.toString())
 
-                    val inputData = Data.Builder().putString("message", "Alarm triggered at 9:00 PM!").build()
+                    notificationDialog(requireContext(),cal.timeInMillis,titleText,descriptionText,0)
 
-                    val workRequest = OneTimeWorkRequest.Builder(MyWorker::class.java)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .setInputData(inputData)
-                        .build()
-
-                    WorkManager.getInstance(requireContext()).enqueue(workRequest)
-
-                    Toast.makeText(requireContext(), "Alarm set ", Toast.LENGTH_SHORT).show()
-                }
+                    }
 
             Toast.makeText(context,"Reminder Added",Toast.LENGTH_SHORT).show()
         }
@@ -175,5 +164,37 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
         textView.setOnClickListener {
             DatePickerDialog(context, dateSetListener, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
         }
+
+
+
     }
+    fun notificationDialog(context: Context, time:Long, title:String, description:String, id:Int) {
+        val notificationManager =
+            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val NOTIFICATION_CHANNEL_ID = "C_id"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            @SuppressLint("WrongConstant") val notificationChannel = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                "My Notifications",
+                NotificationManager.IMPORTANCE_MAX
+            )
+            // Configure the notification channel.
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
+            notificationChannel.enableVibration(true)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        notificationBuilder.setAutoCancel(true)
+            .setDefaults(Notification.DEFAULT_ALL)
+            .setWhen(time)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(description)
+            .setContentInfo("")
+        notificationManager.notify(id, notificationBuilder.build())
+    }
+
 }
