@@ -1,5 +1,7 @@
 package com.example.remindify
 
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,7 +37,8 @@ class LandingPage : AppCompatActivity() {
 //            number=10
 //            isVisible=true
 //        }
-
+        var intent= IntentFilter("myalarm")
+        registerReceiver(MyReceiver(),intent)
 
     }
 }

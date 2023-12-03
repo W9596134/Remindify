@@ -1,17 +1,13 @@
 package com.example.remindify
 
-import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -21,8 +17,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -30,7 +24,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.makeramen.roundedimageview.RoundedImageView
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -60,6 +53,7 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
         getDate(date,requireContext())
         var time = view.findViewById<TextView>(R.id.time)
         getTime(time,requireContext())
+
 
 
         save.setOnClickListener {
@@ -95,7 +89,8 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
                     val delay = cal.timeInMillis - System.currentTimeMillis()
                     Log.e("timessdsd",delay.toString())
 
-                    notificationDialog(requireContext(),cal.timeInMillis,titleText,descriptionText,0)
+
+                    scheduleNotification(requireContext(),cal.timeInMillis,titleText,descriptionText,imageurl,0)
 
                     }
 
@@ -158,7 +153,8 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
             cal.set(Calendar.MONTH, month)
             cal.set(Calendar.DAY_OF_MONTH, day)
 
-            textView.text = SimpleDateFormat("dd/MM/yyyy").format(cal.time)
+
+            textView.text = SimpleDateFormat("dd/MM/yyyy").format(cal.time).toString()
         }
 
         textView.setOnClickListener {
@@ -168,33 +164,30 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
 
 
     }
-    fun notificationDialog(context: Context, time:Long, title:String, description:String, id:Int) {
-        val notificationManager =
-            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        val NOTIFICATION_CHANNEL_ID = "C_id"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            @SuppressLint("WrongConstant") val notificationChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                "My Notifications",
-                NotificationManager.IMPORTANCE_MAX
-            )
-            // Configure the notification channel.
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.RED
-            notificationChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
-            notificationChannel.enableVibration(true)
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-        val notificationBuilder: NotificationCompat.Builder =
-            NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-        notificationBuilder.setAutoCancel(true)
-            .setDefaults(Notification.DEFAULT_ALL)
-            .setWhen(time)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(title)
-            .setContentText(description)
-            .setContentInfo("")
-        notificationManager.notify(id, notificationBuilder.build())
+
+    private fun scheduleNotification(
+        context: Context,
+        time: Long,
+        title: String,
+        description: String,
+        imageurl: String?,
+        id: Int
+    ) {
+        val intent = Intent(context, MyReceiver::class.java)
+        intent.putExtra("time", time.toString())
+        intent.putExtra("title", title)
+        intent.putExtra("description", description)
+        intent.putExtra("image", imageurl)
+        intent.putExtra("id", id)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent)
     }
 
 }

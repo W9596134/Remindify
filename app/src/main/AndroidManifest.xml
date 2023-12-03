@@ -36,6 +36,13 @@
         <activity
             android:name=".SignIn"
             android:exported="true" />
+        <receiver android:name=".MyReceiver"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="myalarm" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
