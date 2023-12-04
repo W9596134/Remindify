@@ -60,6 +60,7 @@ class PastReminders : Fragment(R.layout.fragment_past_reminders) {
 
                     ls.add(reminder)
                     ls.sortBy { it.timeinmilli }
+                    ls.reverse()
                     adapter.notifyDataSetChanged()
                 }
                 adapter.notifyDataSetChanged()
