@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.childEvents
 import com.google.firebase.database.getValue
+import java.util.Calendar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -42,9 +43,23 @@ class PastReminders : Fragment(R.layout.fragment_past_reminders) {
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var reminderw=snapshot.getValue<Reminderw>()
-                val reminder=Reminder(snapshot.key.toString(),reminderw!!)
-                if (reminder != null) {
+                var cal = Calendar.getInstance()
+
+                if (reminderw != null) {
+                    cal.set(Calendar.DAY_OF_MONTH, reminderw.date!!.split("/")[0].toInt())
+                    cal.set(Calendar.MONTH,reminderw.date!!.split("/")[1].toInt()-1)
+                    cal.set(Calendar.YEAR,reminderw.date!!.split("/")[2].toInt())
+                }
+
+                if (reminderw != null) {
+                    cal.set(Calendar.HOUR_OF_DAY,reminderw.time!!.split(":")[0].toInt())
+                    cal.set(Calendar.MINUTE,reminderw.time!!.split(":")[1].toInt())
+                }
+                val reminder=Reminder(snapshot.key.toString(),reminderw!!,cal.timeInMillis)
+                if (reminder != null && System.currentTimeMillis()>reminder.timeinmilli) {
+
                     ls.add(reminder)
+                    ls.sortBy { it.timeinmilli }
                     adapter.notifyDataSetChanged()
                 }
                 adapter.notifyDataSetChanged()

@@ -51,8 +51,10 @@ class Tdo : Fragment(R.layout.fragment_tdo) {
         var description = view.findViewById<TextView>(R.id.description)
         img = view.findViewById<RoundedImageView>(R.id.img)
         getDate(date,requireContext())
+        date.text=Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()+"/"+(Calendar.getInstance().get(Calendar.MONTH)+1).toString()+"/"+Calendar.getInstance().get(Calendar.YEAR).toString()
         var time = view.findViewById<TextView>(R.id.time)
         getTime(time,requireContext())
+        time.text=Calendar.getInstance().get(Calendar.HOUR_OF_DAY).toString()+":"+Calendar.getInstance().get(Calendar.MINUTE).toString()
 
 
 
