@@ -64,7 +64,7 @@ class MyReceiver : BroadcastReceiver() {
             context,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
